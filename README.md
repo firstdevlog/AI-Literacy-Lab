@@ -82,18 +82,18 @@ npm run build
 
 서비스 주소는 <https://firstdevlog.github.io/AI-Literacy-Lab/>입니다. Vite `base`는 `/AI-Literacy-Lab/`이며 `HashRouter`를 사용해 `/AI-Literacy-Lab/#/stage/1` 같은 해시 경로의 새로고침을 지원합니다.
 
-1. 배포 작업은 기존 Pages 사이트의 Source를 **GitHub Actions**로 맞춥니다. 저장소 정책으로 이 변경이 거부되면 관리자가 **Settings → Pages → Build and deployment → Source → GitHub Actions**를 선택해야 합니다.
+1. 권장 설정은 **Settings → Pages → Build and deployment → Source → GitHub Actions**입니다. 기존 브랜치 방식이 유지되더라도 배포 작업은 같은 커밋의 기존 Pages 배포가 끝난 뒤 검증된 `dist/`를 게시합니다. 관리자 권한이나 개인 토큰을 요구하지 않습니다.
 2. 변경을 `main`에 병합하거나 **Actions → Deploy GitHub Pages → Run workflow**에서 `main`을 선택합니다.
 3. 품질 검사와 Chromium E2E가 성공하면 `dist/` Pages artifact를 배포합니다.
 4. Actions의 `github-pages` 환경 링크를 열어 CSS·JS 로드, Stage 1 진입, 해시 경로 새로고침, 응시·제출·기록 저장을 확인합니다.
 
-PR와 `main` 외 브랜치에서는 CI만 실행합니다. Pages 배포 작업만 `pages: write`, `id-token: write` 권한을 사용하며 개인 토큰은 필요하지 않습니다. 조직의 Actions 정책, Pages 사용 제한 또는 보호된 환경 승인은 저장소 관리자의 설정이 필요할 수 있습니다. **워크플로 파일이 존재하는 사실만으로 실제 원격 배포가 완료된 것은 아닙니다.**
+PR와 `main` 외 브랜치에서는 CI만 실행합니다. Pages 배포 작업만 `pages: write`, `id-token: write`를 사용하며, 같은 커밋의 기존 배포 완료를 확인하기 위해 `actions: read`를 사용합니다. 개인 토큰은 필요하지 않습니다. 조직의 Actions 정책, Pages 사용 제한 또는 보호된 환경 승인은 저장소 관리자의 설정이 필요할 수 있습니다. **워크플로 파일이 존재하는 사실만으로 실제 원격 배포가 완료된 것은 아닙니다.**
 
 2026-10-18(한국시간), 검증된 `57652b9`를 `main`에 일반 fast-forward 방식으로 반영했고 [GitHub Pages 배포 #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343)에서 빌드·Chromium E2E·Pages 게시가 모두 성공한 것을 공개 Actions 화면으로 확인했습니다. PR 생성 API는 `Forbidden`으로 차단되어 PR은 생성하지 않았습니다. 강제 전송은 사용하지 않았습니다.
 
 현재 클라우드의 `api.github.com` 및 `firstdevlog.github.io` 직접 요청은 계속 네트워크 정책으로 차단됩니다. 따라서 실제 공개 URL에서의 CSS·JS와 브라우저 동작을 이 환경에서 직접 확인한 것으로 주장하지 않습니다. 동일 산출물의 로컬 프로덕션 검증과 GitHub의 게시 성공은 확인했습니다. 재사용 설치·시작 안내와 두 도메인 허용은 환경 초안에 저장되어 있으며, 이 초안의 적용·게시는 Pages 배포와 별개입니다.
 
-최초 배포에서 기존 브랜치 기반 Pages 작업과 Vite 작업이 함께 실행되는 것을 발견했습니다. 이후 배포는 GitHub Actions를 Source로 선택한 뒤 `dist/`를 게시하도록 구성해 원본 HTML이 다시 배포되는 경합을 방지합니다.
+최초 배포에서 기존 브랜치 기반 Pages 작업과 Vite 작업이 함께 실행되는 것을 발견했습니다. Pages Source 자동 변경은 기본 토큰의 관리 권한 제한으로 실패했으므로 이 변경을 배포의 필수 조건으로 두지 않습니다. 워크플로는 같은 커밋의 기존 Pages 작업이 끝났는지 확인하고, 이후 검증된 `dist/`를 게시해 원본 HTML이 최종 배포를 덮어쓰는 경합을 방지합니다. 10분 안에 기존 작업이 끝나지 않으면 게시를 중단해 경합을 피합니다.
 
 ## 구조와 확장
 

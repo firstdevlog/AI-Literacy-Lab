@@ -23,27 +23,41 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
+      actions: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Select GitHub Actions as the Pages source
+      - name: Wait for legacy branch-based Pages deployments
         uses: actions/github-script@v8
         with:
           script: |
-            const { data: site } = await github.rest.repos.getPages(context.repo);
-            if (site.build_type !== 'workflow') {
-              await github.rest.repos.updateInformationAboutPagesSite({
+            // A repository using branch-based Pages also deploys the raw source.
+            // Publish the tested Vite artifact after those runs, without requiring
+            // repository-admin rights to change the site's Pages source setting.
+            for (let attempt = 0; attempt < 40; attempt++) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
                 ...context.repo,
-                build_type: 'workflow',
+                head_sha: context.sha,
+                branch: 'main',
+                per_page: 100,
               });
-              core.info('Pages source changed to GitHub Actions.');
-            } else {
-              core.info('Pages source already uses GitHub Actions.');
+              const legacyRuns = data.workflow_runs.filter(run =>
+                run.event === 'dynamic' && run.name === 'pages build and deployment'
+              );
+              if (legacyRuns.every(run => run.status === 'completed')) {
+                core.info(`Legacy Pages runs complete (${legacyRuns.length}); publishing the validated Vite artifact.`);
+                break;
+              }
+              if (attempt === 39) {
+                throw new Error('Legacy Pages deployment did not finish in 10 minutes. Refusing to race an unfinished deployment.');
+              }
+              core.info('Waiting for legacy Pages deployment to finish...');
+              await new Promise(resolve => setTimeout(resolve, 15000));
             }
       - name: Publish to GitHub Pages
         id: deployment

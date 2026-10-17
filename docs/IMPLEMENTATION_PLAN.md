@@ -102,7 +102,7 @@ Axe는 대시보드·소개·해설을 연 응시·제출 다이얼로그·결�
 
 - 2026-10-18(한국시간) GitHub 공개 Actions 화면에서 기능 브랜치 CI 성공을 확인한 뒤 검증된 `57652b9`를 main에 일반 fast-forward 반영했습니다. 원격 PR은 API 차단 때문에 생성하지 않았으며 강제 전송은 사용하지 않았습니다.
 - [Pages 배포 #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343)의 품질 검사·Chromium E2E·Pages 게시가 모두 성공했습니다. GitHub가 반환한 사이트 주소는 `https://firstdevlog.github.io/AI-Literacy-Lab/`입니다.
-- 최초 main push에서 기존 브랜치 기반 Pages 작업도 동시에 실행됐습니다. 이후 배포 작업은 기존 Pages 사이트의 Source를 GitHub Actions로 선택한 뒤 게시합니다. 현재 job의 Pages 쓰기 권한으로 실행하며, 저장소 정책이 이를 거부하면 관리자가 Settings → Pages에서 Source를 GitHub Actions로 선택해야 합니다.
+- 최초 main push에서 기존 브랜치 기반 Pages 작업도 동시에 실행됐습니다. Pages Source 자동 전환은 기본 토큰의 관리 권한 제한(`Resource not accessible by integration`)으로 실패했습니다. 이후 워크플로는 `actions: read`로 같은 커밋의 기존 Pages 작업이 끝날 때까지 기다리고, 검증된 Vite 산출물을 마지막에 게시합니다. 10분 내 완료되지 않으면 경합 없이 중단합니다. Source를 GitHub Actions로 설정하는 것은 권장 사항이며 배포에 관리자 토큰을 요구하지 않습니다.
 - 공개 URL 자체는 현재 클라우드 네트워크에서 차단됩니다. CSS·JS·문제 풀이·제출·기록은 로컬 프로덕션 산출물에서 검증했고, 공개 서버 동작을 확인했다고 주장하지 않습니다.
 - 설치·시작 안내와 `api.github.com`, `firstdevlog.github.io` 허용은 환경 초안에 저장되어 있지만 현재 실행 인스턴스에는 반영되지 않았습니다. 환경 초안 게시는 Pages 배포와 별개이며, 향후 GitHub API 관리 또는 이 클라우드에서 공개 URL을 직접 검증할 때 필요합니다.
 
