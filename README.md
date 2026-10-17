@@ -80,16 +80,20 @@ npm run build
 
 ## GitHub Pages 배포
 
-목표 주소는 <https://firstdevlog.github.io/AI-Literacy-Lab/>입니다. Vite `base`는 `/AI-Literacy-Lab/`이며 `HashRouter`를 사용해 `/AI-Literacy-Lab/#/stage/1` 같은 해시 경로의 새로고침을 지원합니다.
+서비스 주소는 <https://firstdevlog.github.io/AI-Literacy-Lab/>입니다. Vite `base`는 `/AI-Literacy-Lab/`이며 `HashRouter`를 사용해 `/AI-Literacy-Lab/#/stage/1` 같은 해시 경로의 새로고침을 지원합니다.
 
-1. 저장소 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정합니다.
+1. 배포 작업은 기존 Pages 사이트의 Source를 **GitHub Actions**로 맞춥니다. 저장소 정책으로 이 변경이 거부되면 관리자가 **Settings → Pages → Build and deployment → Source → GitHub Actions**를 선택해야 합니다.
 2. 변경을 `main`에 병합하거나 **Actions → Deploy GitHub Pages → Run workflow**에서 `main`을 선택합니다.
 3. 품질 검사와 Chromium E2E가 성공하면 `dist/` Pages artifact를 배포합니다.
 4. Actions의 `github-pages` 환경 링크를 열어 CSS·JS 로드, Stage 1 진입, 해시 경로 새로고침, 응시·제출·기록 저장을 확인합니다.
 
 PR와 `main` 외 브랜치에서는 CI만 실행합니다. Pages 배포 작업만 `pages: write`, `id-token: write` 권한을 사용하며 개인 토큰은 필요하지 않습니다. 조직의 Actions 정책, Pages 사용 제한 또는 보호된 환경 승인은 저장소 관리자의 설정이 필요할 수 있습니다. **워크플로 파일이 존재하는 사실만으로 실제 원격 배포가 완료된 것은 아닙니다.**
 
-`feat/stage-one-platform` 브랜치의 구현 커밋 `4739a3c`를 GitHub에 전송했습니다. [PR 생성 링크](https://github.com/firstdevlog/AI-Literacy-Lab/pull/new/feat/stage-one-platform)에서 `main` 대상 PR을 만들 수 있습니다. 현재 클라우드에서 실제 `gh pr create` 요청은 `api.github.com/graphql`의 `Forbidden`으로 실패해 PR은 생성되지 않았습니다. GitHub 저장소 `main` 읽기와 기능 브랜치 쓰기는 가능하지만 `api.github.com`은 `Forbidden`, 목표 Pages 도메인은 프록시 `CONNECT 403`으로 차단되었습니다. **원격 배포와 목표 URL 동작은 아직 확인하지 못했습니다.** 환경 설정에서 두 도메인의 허용 추가를 반영한 뒤 PR·배포 상태와 실제 URL을 다시 확인해야 합니다. 재사용 설치·시작 안내와 두 도메인의 추가는 환경 초안에 저장되어 있으며 아직 적용·게시되지 않았습니다. 환경 설정에서 초안을 검토·저장/게시해야 이후 환경에 반영됩니다.
+2026-10-18(한국시간), 검증된 `57652b9`를 `main`에 일반 fast-forward 방식으로 반영했고 [GitHub Pages 배포 #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343)에서 빌드·Chromium E2E·Pages 게시가 모두 성공한 것을 공개 Actions 화면으로 확인했습니다. PR 생성 API는 `Forbidden`으로 차단되어 PR은 생성하지 않았습니다. 강제 전송은 사용하지 않았습니다.
+
+현재 클라우드의 `api.github.com` 및 `firstdevlog.github.io` 직접 요청은 계속 네트워크 정책으로 차단됩니다. 따라서 실제 공개 URL에서의 CSS·JS와 브라우저 동작을 이 환경에서 직접 확인한 것으로 주장하지 않습니다. 동일 산출물의 로컬 프로덕션 검증과 GitHub의 게시 성공은 확인했습니다. 재사용 설치·시작 안내와 두 도메인 허용은 환경 초안에 저장되어 있으며, 이 초안의 적용·게시는 Pages 배포와 별개입니다.
+
+최초 배포에서 기존 브랜치 기반 Pages 작업과 Vite 작업이 함께 실행되는 것을 발견했습니다. 이후 배포는 GitHub Actions를 Source로 선택한 뒤 `dist/`를 게시하도록 구성해 원본 HTML이 다시 배포되는 경합을 방지합니다.
 
 ## 구조와 확장
 

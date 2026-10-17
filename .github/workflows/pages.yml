@@ -31,6 +31,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Select GitHub Actions as the Pages source
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: site } = await github.rest.repos.getPages(context.repo);
+            if (site.build_type !== 'workflow') {
+              await github.rest.repos.updateInformationAboutPagesSite({
+                ...context.repo,
+                build_type: 'workflow',
+              });
+              core.info('Pages source changed to GitHub Actions.');
+            } else {
+              core.info('Pages source already uses GitHub Actions.');
+            }
       - name: Publish to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

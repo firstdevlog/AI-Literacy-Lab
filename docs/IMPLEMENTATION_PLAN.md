@@ -55,8 +55,9 @@ Stage 1을 실제 문제 풀이·자동 채점·복습·로컬 이력까지 제�
 - [x] `npm ci`, lint, 문항 검증, unit/integration test, build, E2E 실제 실행 결과 기록.
 - [x] 기존 HTTPS Git 인증으로 `main` 읽기 작업 성공 확인.
 - [x] `feat/stage-one-platform` 기능 브랜치 원격 푸시 성공: 구현 커밋 `4739a3c`.
-- [ ] 원격 PR 생성: `gh pr create`가 `api.github.com/graphql`의 `Forbidden`으로 실패, PR 미생성.
-- [ ] 원격 Pages 배포 및 목표 URL 검증: `firstdevlog.github.io` 요청이 프록시 `CONNECT 403`으로 차단되어 미확인.
+- [x] PR API 차단과 배포 경로 결정 기록: PR은 생성하지 못했고, 배포 진행 요청에 따라 검증된 커밋을 일반 Git fast-forward로 main에 반영.
+- [x] 원격 Pages 배포: [워크플로 #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343)의 빌드·E2E·게시 모두 성공 확인.
+- [ ] 실제 공개 URL 직접 검증: `firstdevlog.github.io`는 현재 실행 환경의 정책으로 계속 차단됨.
 
 완료 조건: 자동화 검증 결과를 있는 그대로 기록한다. 배포가 가능한 경우 원격 URL에서 assets와 응시 흐름을 확인하고, 불가능하면 코드·워크플로 및 필요한 마지막 관리자 설정을 구체적으로 남긴다.
 
@@ -78,7 +79,8 @@ Stage 1을 실제 문제 풀이·자동 채점·복습·로컬 이력까지 제�
 | GitHub 저장소 읽기 | 성공 | 기존 HTTPS Git 설정으로 원격 `main` 읽기 |
 | GitHub 기능 브랜치 전송 | 성공 | 구현 커밋 `4739a3c`, `origin/feat/stage-one-platform` 생성 |
 | GitHub API·PR 생성 | **차단 / 미생성** | 실제 `gh pr create` 요청이 `api.github.com/graphql`에서 `Forbidden`으로 실패 |
-| Pages 실제 원격 배포 | **미실행·미확인** | 목표 주소 요청이 환경 정책의 `CONNECT 403`으로 차단됨 |
+| Pages 실제 원격 배포 | **성공** | 2026-10-18(한국시간), 검증된 `57652b9`를 main에 일반 fast-forward 반영 후 [Actions #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343) 빌드·E2E·게시 성공 |
+| 공개 URL 직접 검증 | 차단 | 환경 정책으로 직접 요청 403, 브라우저 동작은 로컬 프로덕션 산출물에서만 확인 |
 
 최종 화면 다듬기 후 lint, React UI 통합 3개, 빌드와 전체 Chromium 17개를 다시 실행해 모두 통과했습니다. 앞선 전체 단위·통합 54개 통과 이후의 재검증이며 별도 테스트 개수를 중복 합산하지 않습니다.
 
@@ -86,7 +88,7 @@ E2E에는 학습·모의평가, 고정 출제 배열과 새로고침, 제한시�
 
 Axe는 대시보드·소개·해설을 연 응시·제출 다이얼로그·결과·이력·복습 **7개 화면 상태**에 WCAG A/AA 관련 자동 규칙을 적용해 위반 0건을 확인했습니다. 본문 건너뛰기가 해시 라우트를 훼손하지 않는 회귀 테스트도 통과했습니다. 자동 검사는 수동 스크린리더 평가나 WCAG 2.2 AA 전체 적합성 인증을 대신하지 않습니다.
 
-프로덕션 preview 검증은 로컬 빌드 산출물에 대한 증거입니다. GitHub Pages의 실제 서버·배포 성공을 확인한 결과로 취급하지 않습니다. `https://firstdevlog.github.io/AI-Literacy-Lab/`는 아직 검증되지 않은 **목표 URL**입니다.
+프로덕션 preview 검증은 로컬 빌드 산출물에 대한 증거입니다. GitHub Pages의 실제 서버·배포 성공을 확인한 결과로 취급하지 않습니다. `https://firstdevlog.github.io/AI-Literacy-Lab/`로 GitHub Pages 게시가 성공한 것은 Actions에서 확인했습니다. 다만 현재 클라우드에서 공개 URL 자체를 요청하는 작업은 계속 차단됩니다.
 
 ## 제약과 설계 결정
 
@@ -96,12 +98,13 @@ Axe는 대시보드·소개·해설을 연 응시·제출 다이얼로그·결�
 - 이력 가져오기는 전체 검증 후 교체합니다. 가져오기 전 현재 기록을 백업하도록 안내합니다.
 - GitHub Pages의 Source 설정과 조직 보호 정책은 저장소 권한에 따라 관리자가 설정해야 할 수 있습니다. 실제 배포가 확인되기 전에는 목표 URL을 운영 확인 URL로 보고하지 않습니다.
 
-## 남은 원격 설정과 검증
+## 원격 배포 기록과 남은 검증
 
-1. 재사용 `install_script`·`start_skill`과 `api.github.com`, `firstdevlog.github.io` 네트워크 추가를 환경 초안에 저장했습니다. 초안은 `requires_publish: true`이며 현재 실행 인스턴스에 적용되거나 게시되지 않았습니다. 환경 설정에서 검토·저장/게시하고 실행 인스턴스에 반영한 뒤 차단된 요청을 다시 확인합니다.
-2. 기능 브랜치는 GitHub에 전송했습니다. PR API 요청은 차단되어 PR은 생성되지 않았습니다. [GitHub에서 PR 생성](https://github.com/firstdevlog/AI-Literacy-Lab/pull/new/feat/stage-one-platform) 링크로 `main` 대상 PR을 만들거나 네트워크 변경 후 다시 생성합니다. main은 변경하지 않았으며 강제 전송하지 않았습니다.
-3. 저장소 **Settings → Pages → Source: GitHub Actions**를 설정하고 PR 병합 후 main 워크플로 또는 main 대상 수동 배포를 실행합니다. 조직 보호 정책이 있으면 저장소 관리자가 필요한 승인을 처리합니다.
-4. 실제 배포 환경 URL에서 CSS·JS·해시 경로 새로고침·문제 풀이·제출·기록 복원을 확인합니다.
+- 2026-10-18(한국시간) GitHub 공개 Actions 화면에서 기능 브랜치 CI 성공을 확인한 뒤 검증된 `57652b9`를 main에 일반 fast-forward 반영했습니다. 원격 PR은 API 차단 때문에 생성하지 않았으며 강제 전송은 사용하지 않았습니다.
+- [Pages 배포 #1](https://github.com/firstdevlog/AI-Literacy-Lab/actions/runs/39047085343)의 품질 검사·Chromium E2E·Pages 게시가 모두 성공했습니다. GitHub가 반환한 사이트 주소는 `https://firstdevlog.github.io/AI-Literacy-Lab/`입니다.
+- 최초 main push에서 기존 브랜치 기반 Pages 작업도 동시에 실행됐습니다. 이후 배포 작업은 기존 Pages 사이트의 Source를 GitHub Actions로 선택한 뒤 게시합니다. 현재 job의 Pages 쓰기 권한으로 실행하며, 저장소 정책이 이를 거부하면 관리자가 Settings → Pages에서 Source를 GitHub Actions로 선택해야 합니다.
+- 공개 URL 자체는 현재 클라우드 네트워크에서 차단됩니다. CSS·JS·문제 풀이·제출·기록은 로컬 프로덕션 산출물에서 검증했고, 공개 서버 동작을 확인했다고 주장하지 않습니다.
+- 설치·시작 안내와 `api.github.com`, `firstdevlog.github.io` 허용은 환경 초안에 저장되어 있지만 현재 실행 인스턴스에는 반영되지 않았습니다. 환경 초안 게시는 Pages 배포와 별개이며, 향후 GitHub API 관리 또는 이 클라우드에서 공개 URL을 직접 검증할 때 필요합니다.
 
 ## 변경·신규 파일 목록
 
