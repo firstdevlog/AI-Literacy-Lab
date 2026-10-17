@@ -89,7 +89,7 @@ npm run build
 
 PR와 `main` 외 브랜치에서는 CI만 실행합니다. Pages 배포 작업만 `pages: write`, `id-token: write` 권한을 사용하며 개인 토큰은 필요하지 않습니다. 조직의 Actions 정책, Pages 사용 제한 또는 보호된 환경 승인은 저장소 관리자의 설정이 필요할 수 있습니다. **워크플로 파일이 존재하는 사실만으로 실제 원격 배포가 완료된 것은 아닙니다.**
 
-현재 클라우드에서는 GitHub 저장소 `main` 읽기를 확인했지만 `api.github.com`은 `Forbidden`, 목표 Pages 도메인은 프록시 `CONNECT 403`으로 차단되었습니다. **원격 배포와 목표 URL 동작은 아직 확인하지 못했습니다.** 환경 설정에서 두 도메인의 허용 추가를 반영한 뒤 PR·배포 상태와 실제 URL을 다시 확인해야 합니다. 재사용 설치·시작 안내와 두 도메인의 추가는 환경 초안에 저장되어 있으며 아직 적용·게시되지 않았습니다. 환경 설정에서 초안을 검토·저장/게시해야 이후 환경에 반영됩니다.
+`feat/stage-one-platform` 브랜치의 구현 커밋 `4739a3c`를 GitHub에 전송했습니다. [PR 생성 링크](https://github.com/firstdevlog/AI-Literacy-Lab/pull/new/feat/stage-one-platform)에서 `main` 대상 PR을 만들 수 있습니다. 현재 클라우드에서 실제 `gh pr create` 요청은 `api.github.com/graphql`의 `Forbidden`으로 실패해 PR은 생성되지 않았습니다. GitHub 저장소 `main` 읽기와 기능 브랜치 쓰기는 가능하지만 `api.github.com`은 `Forbidden`, 목표 Pages 도메인은 프록시 `CONNECT 403`으로 차단되었습니다. **원격 배포와 목표 URL 동작은 아직 확인하지 못했습니다.** 환경 설정에서 두 도메인의 허용 추가를 반영한 뒤 PR·배포 상태와 실제 URL을 다시 확인해야 합니다. 재사용 설치·시작 안내와 두 도메인의 추가는 환경 초안에 저장되어 있으며 아직 적용·게시되지 않았습니다. 환경 설정에서 초안을 검토·저장/게시해야 이후 환경에 반영됩니다.
 
 ## 구조와 확장
 

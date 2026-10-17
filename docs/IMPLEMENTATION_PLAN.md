@@ -54,7 +54,8 @@ Stage 1을 실제 문제 풀이·자동 채점·복습·로컬 이력까지 제�
 - [x] README·아키텍처·문항 작성·벤치마크 범위 문서 작성.
 - [x] `npm ci`, lint, 문항 검증, unit/integration test, build, E2E 실제 실행 결과 기록.
 - [x] 기존 HTTPS Git 인증으로 `main` 읽기 작업 성공 확인.
-- [ ] 원격 기능 브랜치 PR 생성 확인: GitHub API가 `Forbidden`으로 차단되어 생성 여부 미확정.
+- [x] `feat/stage-one-platform` 기능 브랜치 원격 푸시 성공: 구현 커밋 `4739a3c`.
+- [ ] 원격 PR 생성: `gh pr create`가 `api.github.com/graphql`의 `Forbidden`으로 실패, PR 미생성.
 - [ ] 원격 Pages 배포 및 목표 URL 검증: `firstdevlog.github.io` 요청이 프록시 `CONNECT 403`으로 차단되어 미확인.
 
 완료 조건: 자동화 검증 결과를 있는 그대로 기록한다. 배포가 가능한 경우 원격 URL에서 assets와 응시 흐름을 확인하고, 불가능하면 코드·워크플로 및 필요한 마지막 관리자 설정을 구체적으로 남긴다.
@@ -75,7 +76,8 @@ Stage 1을 실제 문제 풀이·자동 채점·복습·로컬 이력까지 제�
 | 프로덕션 preview | 확인 | 4273 포트의 실제 `dist/`, base 경로 JS/CSS HTTP 200 및 올바른 MIME, 5문항 학습의 선택→제출→결과, 해시 경로 새로고침, 페이지 오류 없음 |
 | 워크플로·문서 | 확인 | CI/Pages YAML 파싱, 문서 로컬 링크 누락 없음 |
 | GitHub 저장소 읽기 | 성공 | 기존 HTTPS Git 설정으로 원격 `main` 읽기 |
-| GitHub API·PR 생성 | 차단 / 생성 미확정 | `api.github.com` 응답 `Forbidden`; 기능 브랜치 전송·PR의 최종 상태는 별도 확인 필요 |
+| GitHub 기능 브랜치 전송 | 성공 | 구현 커밋 `4739a3c`, `origin/feat/stage-one-platform` 생성 |
+| GitHub API·PR 생성 | **차단 / 미생성** | 실제 `gh pr create` 요청이 `api.github.com/graphql`에서 `Forbidden`으로 실패 |
 | Pages 실제 원격 배포 | **미실행·미확인** | 목표 주소 요청이 환경 정책의 `CONNECT 403`으로 차단됨 |
 
 최종 화면 다듬기 후 lint, React UI 통합 3개, 빌드와 전체 Chromium 17개를 다시 실행해 모두 통과했습니다. 앞선 전체 단위·통합 54개 통과 이후의 재검증이며 별도 테스트 개수를 중복 합산하지 않습니다.
@@ -97,7 +99,7 @@ Axe는 대시보드·소개·해설을 연 응시·제출 다이얼로그·결�
 ## 남은 원격 설정과 검증
 
 1. 재사용 `install_script`·`start_skill`과 `api.github.com`, `firstdevlog.github.io` 네트워크 추가를 환경 초안에 저장했습니다. 초안은 `requires_publish: true`이며 현재 실행 인스턴스에 적용되거나 게시되지 않았습니다. 환경 설정에서 검토·저장/게시하고 실행 인스턴스에 반영한 뒤 차단된 요청을 다시 확인합니다.
-2. 기능 브랜치의 최종 커밋을 전송하고 PR 생성 결과를 확인합니다. 이 문서 작성 시 PR URL은 확인되지 않았으며 main을 덮어쓰거나 강제 전송하지 않았습니다.
+2. 기능 브랜치는 GitHub에 전송했습니다. PR API 요청은 차단되어 PR은 생성되지 않았습니다. [GitHub에서 PR 생성](https://github.com/firstdevlog/AI-Literacy-Lab/pull/new/feat/stage-one-platform) 링크로 `main` 대상 PR을 만들거나 네트워크 변경 후 다시 생성합니다. main은 변경하지 않았으며 강제 전송하지 않았습니다.
 3. 저장소 **Settings → Pages → Source: GitHub Actions**를 설정하고 PR 병합 후 main 워크플로 또는 main 대상 수동 배포를 실행합니다. 조직 보호 정책이 있으면 저장소 관리자가 필요한 승인을 처리합니다.
 4. 실제 배포 환경 URL에서 CSS·JS·해시 경로 새로고침·문제 풀이·제출·기록 복원을 확인합니다.
 
